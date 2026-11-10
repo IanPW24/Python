@@ -14,7 +14,7 @@ MOD_ADLER = 65521
 def adler32(plain_text: str) -> int:
     """
     Function implements adler-32 hash.
-    Iterates and evaluates a new value for each character
+    Iterates and evaluates a new value for each byte of the UTF-8 encoded text
 
     >>> adler32('Algorithms')
     363791387
@@ -24,7 +24,9 @@ def adler32(plain_text: str) -> int:
     """
     a = 1
     b = 0
-    for plain_chr in plain_text:
-        a = (a + ord(plain_chr)) % MOD_ADLER
+    # Adler-32 is defined over bytes, so non-ASCII characters must be encoded first;
+    # summing Unicode code points would not match other implementations.
+    for plain_byte in plain_text.encode("utf-8"):
+        a = (a + plain_byte) % MOD_ADLER
         b = (b + a) % MOD_ADLER
     return (b << 16) | a
